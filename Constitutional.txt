@@ -1,0 +1,272 @@
+import React from 'react';
+import { useState } from 'react';
+import { Scale, AlertCircle, FileText, Shield, Clock, User, Gavel, MessageSquare, AlertTriangle, Calendar } from 'lucide-react';
+
+const ViolationsTimeline = () => {
+  const [activeDay, setActiveDay] = useState('all');
+  const [activeCategory, setActiveCategory] = useState('all');
+
+  const trialDays = [
+    { id: 'all', label: 'All Days' },
+    { id: 'march12', label: 'Tuesday March 12', date: '2024-03-12' },
+    { id: 'march13', label: 'Wednesday March 13', date: '2024-03-13' },
+    { id: 'march14', label: 'Thursday March 14', date: '2024-03-14' },
+    { id: 'march15', label: 'Friday March 15', date: '2024-03-15' },
+    { id: 'march18', label: 'Monday March 18', date: '2024-03-18' }
+  ];
+
+  const categories = [
+    { id: 'all', label: 'All Types' },
+    { id: 'brady', label: 'Brady/Napue' },
+    { id: 'constitutional', label: 'Constitutional' },
+    { id: 'evidence', label: 'Evidence Manipulation' },
+    { id: 'judicial', label: 'Judicial Misconduct' },
+    { id: 'coordinated', label: 'Coordinated Actions' },
+    { id: 'napue', label: 'Napue Violations' }
+  ];
+
+  const violations = [
+    // Ring Camera Evidence Manipulation Sequence
+    {
+      day: 'march13',
+      severity: 5,
+      category: 'brady',
+      actor: 'Prosecutor Israni',
+      violation: 'Ring Camera Evidence Suppression',
+      description: 'Deliberately presented edited 41-second version of 5:50 video',
+      quote: 'Presented only portion before Kerry explains police verification',
+      impact: 'Concealed exculpatory evidence of police verification',
+      evidence: 'Full 5:50 video vs edited 41s version',
+      time: '00:26:03'
+    },
+    {
+      day: 'march13',
+      severity: 5,
+      category: 'coordinated',
+      actor: 'Both',
+      violation: 'Coordinated Video Evidence Manipulation',
+      description: 'Prosecutor and witness coordinated to hide full video',
+      quote: 'Rojas: "I\'m not sure there is... It\'s been seven months since this incident happened, so I cannot longer go back to it"',
+      impact: 'Created false narrative about video length',
+      evidence: 'Trial transcript cross-examination',
+      time: '01:45:57'
+    },
+    {
+      day: 'march13',
+      severity: 5,
+      category: 'napue',
+      actor: 'Prosecutor Israni',
+      violation: 'False Testimony Solicitation',
+      description: 'Allowed and encouraged false testimony about video',
+      quote: 'Claimed "no knowledge" of longer video while possessing full version',
+      impact: 'Enabled perjured testimony about evidence',
+      evidence: 'Discovery log shows possession of full video',
+      time: '01:46:42'
+    },
+    {
+      day: 'march14',
+      severity: 5,
+      category: 'brady',
+      actor: 'Prosecutor Israni',
+      violation: 'Video Content Concealment',
+      description: 'Objected to showing full video claiming "completely new"',
+      quote: 'Israni: "I mean I\'m going to check again, I don\'t recall a five minute video"',
+      impact: 'Prevented jury from seeing exculpatory evidence',
+      evidence: 'Trial transcript objection sequence',
+      time: '00:34:06'
+    },
+    // Service Fraud Sequence
+    {
+      day: 'march15',
+      severity: 5,
+      category: 'coordinated',
+      actor: 'Both',
+      violation: 'False Service Narrative',
+      description: 'Three contradictory versions of service presented',
+      quote: 'Process server: "one envelope" vs Rojas: "two envelopes, mine first" vs Prosecutor: "two envelopes, Kerry first"',
+      impact: 'Created impossible service scenarios',
+      evidence: 'Contradictory testimony records'
+    },
+    {
+      day: 'march15',
+      severity: 5,
+      category: 'brady',
+      actor: 'Prosecutor Israni',
+      violation: 'Service Evidence Manipulation',
+      description: 'Knowingly presented contradictory service narratives',
+      quote: 'Opening: "picked up two envelopes" vs Server: "it was just one"',
+      impact: 'Manufactured false service evidence',
+      evidence: 'Trial transcripts comparison'
+    },
+    // Closing Arguments Sequence
+    {
+      day: 'march18',
+      severity: 5,
+      category: 'constitutional',
+      actor: 'Prosecutor Israni',
+      violation: 'False Closing Arguments',
+      description: 'Made multiple knowing misrepresentations in closing',
+      quote: '"Code 3 was for August 1st" when 911 call shows July 31st Code 3 response',
+      impact: 'Deliberately misled jury about key facts',
+      evidence: '911 call records vs closing statements'
+    },
+    {
+      day: 'march18',
+      severity: 5,
+      category: 'coordinated',
+      actor: 'Both',
+      violation: 'Enhanced Photo Manipulation',
+      description: 'Introduced and accepted manufactured photo evidence',
+      quote: 'Suddenly produced "enhanced" photo with perfect DV-110 view',
+      impact: 'Created false evidence in closing',
+      evidence: 'No authentication or chain of custody'
+    },
+    {
+      day: 'march18',
+      severity: 5,
+      category: 'napue',
+      actor: 'Prosecutor Israni',
+      violation: 'Closing Argument False Narrative',
+      description: 'Claimed Kerry had same ability to comply as jurors with summons',
+      quote: '"The defendant had the ability to follow the court order in the exact same way that each and every single one of you got a jury summons"',
+      impact: 'Misled jury while knowing about police verification',
+      evidence: 'Closing argument vs suppressed evidence'
+    }
+  ];
+
+  const renderViolation = (violation, idx) => (
+    <div key={idx} className="bg-white p-6 rounded-lg shadow-lg border-l-4 border-red-500">
+      <div className="grid md:grid-cols-2 gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Clock className="w-4 h-4 text-gray-600" />
+            <span className="text-sm font-semibold">{violation.time || ''}</span>
+            <div className="flex items-center gap-1 ml-4">
+              <AlertTriangle className="w-4 h-4 text-red-600" />
+              <span className="text-sm font-bold">Severity: {violation.severity}/5</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mb-2">
+            <User className="w-4 h-4 text-gray-600" />
+            <h3 className="font-bold text-lg">{violation.actor}</h3>
+          </div>
+          <h4 className="font-semibold text-red-600">{violation.violation}</h4>
+          <p className="text-sm mt-2">{violation.description}</p>
+        </div>
+        <div>
+          <div className="bg-gray-50 p-4 rounded mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <MessageSquare className="w-4 h-4 text-blue-600" />
+              <h4 className="font-semibold text-blue-600">Direct Quote</h4>
+            </div>
+            <p className="text-sm italic">{violation.quote}</p>
+          </div>
+          <div>
+            <h4 className="font-semibold text-gray-700 mb-2">Impact & Evidence</h4>
+            <p className="text-sm text-red-600 mb-1">{violation.impact}</p>
+            <p className="text-sm text-gray-600">{violation.evidence}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderTimelineDay = (dayId) => {
+    const dayViolations = violations
+      .filter(v => dayId === 'all' || v.day === dayId)
+      .filter(v => activeCategory === 'all' || v.category === activeCategory)
+      .sort((a, b) => b.severity - a.severity);
+
+    if (dayViolations.length === 0) return null;
+
+    const day = trialDays.find(d => d.id === dayId);
+
+    return (
+      <div key={dayId} className="mb-12">
+        <div className="flex items-center gap-2 mb-6">
+          <Calendar className="w-6 h-6 text-blue-600" />
+          <h2 className="text-xl font-bold">{day?.label || 'All Days'}</h2>
+        </div>
+        <div className="space-y-6">
+          {dayViolations.map((violation, idx) => renderViolation(violation, idx))}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto p-6 bg-gray-50">
+      <h1 className="text-3xl font-bold mb-2 text-center">Constitutional Violations Timeline</h1>
+      <h2 className="text-xl text-red-600 mb-8 text-center">Systematic Misconduct & Rights Deprivation</h2>
+
+      <div className="flex gap-4 mb-8 flex-wrap">
+        <div className="w-full">
+          <h3 className="text-lg font-semibold mb-2">Trial Day:</h3>
+          <div className="flex gap-2 flex-wrap">
+            {trialDays.map(day => (
+              <button
+                key={day.id}
+                onClick={() => setActiveDay(day.id)}
+                className={`px-4 py-2 rounded ${
+                  activeDay === day.id ? 'bg-blue-600 text-white' : 'bg-gray-200'
+                }`}
+              >
+                {day.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="w-full mt-4">
+          <h3 className="text-lg font-semibold mb-2">Violation Type:</h3>
+          <div className="flex gap-2 flex-wrap">
+            {categories.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`px-4 py-2 rounded ${
+                  activeCategory === cat.id ? 'bg-red-600 text-white' : 'bg-gray-200'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-8">
+        {activeDay === 'all' 
+          ? trialDays.slice(1).map(day => renderTimelineDay(day.id))
+          : renderTimelineDay(activeDay)
+        }
+      </div>
+
+      <div className="mt-8 grid md:grid-cols-2 gap-6">
+        <div className="bg-red-50 p-4 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <AlertCircle className="w-6 h-6 text-red-600" />
+            <h3 className="font-semibold">Escalating Pattern</h3>
+          </div>
+          <p className="text-sm">
+            Timeline reveals systematic escalation of violations, showing coordinated effort
+            to prevent exculpatory evidence and secure conviction despite known innocence.
+          </p>
+        </div>
+
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <Shield className="w-6 h-6 text-blue-600" />
+            <h3 className="font-semibold">Cumulative Impact</h3>
+          </div>
+          <p className="text-sm">
+            Multiple violations compound daily, creating overwhelming pattern of
+            constitutional violations and coordinated misconduct requiring immediate review.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ViolationsTimeline;
